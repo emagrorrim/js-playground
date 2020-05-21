@@ -91,14 +91,10 @@ const setupConnection = () => {
   };
 
   connection.onstreamended = (event) => {
-    var mediaElement = document.getElementById(event.streamid);
+    const mediaElement = document.getElementById(event.streamid);
     if (mediaElement) {
       mediaElement.parentNode.removeChild(mediaElement);
     }
-  };
-
-  connection.onMediaError = event => {
-    console.log(event);
   };
 }
 
