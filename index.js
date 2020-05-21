@@ -1,5 +1,6 @@
-var connection = new RTCMultiConnection();
-var constraints = {
+const connection = new RTCMultiConnection();
+const roomId = "predefinedRoomId";
+let constraints = {
   video: {
     width: {
       min: 1280,
@@ -14,28 +15,29 @@ var constraints = {
   },
 };
 
-var devices = []
+let devices = []
 
 const setupSwitchBtn = async () => {
   devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
+  console.log(devices);
   const switchBtn = document.getElementById("switch");
   switchBtn.onclick = () => {
-    if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
-      constraints.video = {
-        ...constraints.video,
-        deviceId: {
-          exact: devices[1].deviceId,
-        },
-      };
-    } else {
-      constraints.video = {
-        ...constraints.video,
-        deviceId: {
-          exact: devices[0].deviceId,
-        },
-      };
-    }
-    connection.openOrJoin("predefinedRoomId");
+    // if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
+    //   constraints.video = {
+    //     ...constraints.video,
+    //     deviceId: {
+    //       exact: devices[1].deviceId,
+    //     },
+    //   };
+    // } else {
+    //   constraints.video = {
+    //     ...constraints.video,
+    //     deviceId: {
+    //       exact: devices[0].deviceId,
+    //     },
+    //   };
+    // }
+    connection.openOrJoin(roomId);
   };
 };
 
@@ -51,9 +53,14 @@ window.onload = async () => {
   };
   connection.mediaConstraints = constraints
   connection.onstream = async (event) => {
-    document.body.appendChild(event.mediaElement);
     setupSwitchBtn();
+    let video = document.getElementById(event.streamId)
+    console.log(video);
+    if (!video) {
+      video = event.mediaElement;
+      document.getElementById("videoContainer").appendChild(video);
+    }
     event.mediaElement.srcObject = event.stream;
   };
-  connection.openOrJoin("predefinedRoomId");
+  connection.openOrJoin(roomId);
 };
