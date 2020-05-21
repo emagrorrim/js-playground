@@ -49,7 +49,7 @@ const setupCameraSelector = async () => {
   };
 };
 
-window.onload = async () => {
+const setupConnection = () => {
   connection.socketURL = "https://rtcmulticonnection.herokuapp.com:443/";
   connection.session = {
     audio: true,
@@ -60,10 +60,11 @@ window.onload = async () => {
     OfferToReceiveVideo: true,
   };
   connection.videosContainer = document.getElementById("videoContainer");
-  connection.mediaConstraints = constraints
+  connection.mediaConstraints = constraints;
+
   connection.onstream = async (event) => {
     setupCameraSelector();
-    let video = document.getElementById(event.streamId);
+    let video = document.getElementById(event.streamid);
     if (video && video.parentNode) {
       video.parentNode.removeChild(video);
     }
@@ -88,5 +89,20 @@ window.onload = async () => {
     video.srcObject = event.stream;
     connection.videosContainer.appendChild(video);
   };
+
+  connection.onstreamended = (event) => {
+    var mediaElement = document.getElementById(event.streamid);
+    if (mediaElement) {
+      mediaElement.parentNode.removeChild(mediaElement);
+    }
+  };
+
+  connection.onMediaError = event => {
+    console.log(event);
+  };
+}
+
+window.onload = async () => {
+  setupConnection()
   connection.openOrJoin(roomId);
 };
