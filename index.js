@@ -5,15 +5,12 @@ let constraints = {
   audio: true,
   video: {
     width: {
-      min: 1280,
       ideal: 1920,
-      max: 2560,
     },
     height: {
-      min: 720,
       ideal: 1080,
-      max: 1440,
     },
+    frameRate: 30,
   },
 };
 
@@ -50,7 +47,7 @@ const setupCameraSelector = async () => {
 };
 
 const setupConnection = () => {
-  connection.socketURL = "https://rtcmulticonnection.herokuapp.com:443/";
+  connection.socketURL = "https://rtcmulticonnection.herokuapp.com/";
   connection.session = {
     audio: true,
     video: true,
@@ -61,6 +58,40 @@ const setupConnection = () => {
   };
   connection.videosContainer = document.getElementById("videoContainer");
   connection.mediaConstraints = constraints;
+
+  const CodecsHandler = connection.CodecsHandler;
+  connection.processSdp = (sdp) => {
+    const codecs = "vp8";
+    const bitrates = 512;
+
+    if (codecs.length) {
+      sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
+    }
+
+    sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
+      audio: 128,
+      video: bitrates,
+      screen: bitrates,
+    });
+
+    sdp = CodecsHandler.setVideoBitrates(sdp, {
+      min: bitrates * 8 * 1024,
+      max: bitrates * 8 * 1024,
+    });
+
+    return sdp;
+  };
+
+  connection.iceServers = [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.l.google.com:19302?transport=udp",
+      ],
+    },
+  ];
 
   connection.onstream = async (event) => {
     setupCameraSelector();
@@ -88,6 +119,10 @@ const setupConnection = () => {
     }
     video.srcObject = event.stream;
     connection.videosContainer.appendChild(video);
+
+    setTimeout(function () {
+      video.play();
+    }, 5000);
   };
 
   connection.onstreamended = (event) => {
