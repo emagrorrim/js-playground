@@ -1,5 +1,6 @@
 const connection = new RTCMultiConnection();
 const roomId = "predefinedRoomId";
+
 let constraints = {
   audio: true,
   video: {
@@ -23,22 +24,32 @@ const setupSwitchBtn = async () => {
   console.log(devices);
   const switchBtn = document.getElementById("switch");
   switchBtn.onclick = () => {
-    // if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
-    //   constraints.video = {
-    //     ...constraints.video,
-    //     deviceId: {
-    //       exact: devices[1].deviceId,
-    //     },
-    //   };
-    // } else {
-    //   constraints.video = {
-    //     ...constraints.video,
-    //     deviceId: {
-    //       exact: devices[0].deviceId,
-    //     },
-    //   };
-    // }
-    connection.openOrJoin(roomId);
+    if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
+      constraints.video = {
+        ...constraints.video,
+        deviceId: {
+          exact: devices[1].deviceId,
+        },
+      };
+    } else {
+      constraints.video = {
+        ...constraints.video,
+        deviceId: {
+          exact: devices[0].deviceId,
+        },
+      };
+    }
+    if (window.stream) {
+      window.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      const video = document.getElementById(window.stream.id);
+      navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+        window.stream = stream;
+        video.srcObject = stream;
+        video.id = stream.id;
+      });
+    }
   };
 };
 
@@ -56,12 +67,11 @@ window.onload = async () => {
   connection.mediaConstraints = constraints
   connection.onstream = async (event) => {
     setupSwitchBtn();
-    let existing = document.getElementById(event.streamId);
-    if (existing && existing.parentNode) {
-      existing.parentNode.removeChild(existing);
+    let video = document.getElementById(event.streamId);
+    if (video && video.parentNode) {
+      video.parentNode.removeChild(video);
     }
-
-    let video = document.createElement("video");
+    video = event.mediaElement;
     try {
       video.setAttributeNode(document.createAttribute("autoplay"));
       video.setAttributeNode(document.createAttribute("playsinline"));
@@ -71,6 +81,7 @@ window.onload = async () => {
     }
 
     if (event.type === "local") {
+      window.stream = event.stream;
       video.volume = 0;
       try {
         video.setAttributeNode(document.createAttribute("muted"));
@@ -80,7 +91,7 @@ window.onload = async () => {
     }
     video.srcObject = event.stream;
     connection.videosContainer.appendChild(video);
-    video.id = event.streamid;
   };
   connection.openOrJoin(roomId);
+  console.log(connection);
 };
