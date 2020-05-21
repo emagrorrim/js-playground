@@ -19,32 +19,30 @@ let constraints = {
 
 let devices = []
 
-const setupSwitchBtn = async () => {
+const setupCameraSelector = async () => {
   devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
-  console.log(devices);
-  const switchBtn = document.getElementById("switch");
-  switchBtn.onclick = () => {
-    if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
-      constraints.video = {
-        ...constraints.video,
-        deviceId: {
-          exact: devices[1].deviceId,
-        },
-      };
-    } else {
-      constraints.video = {
-        ...constraints.video,
-        deviceId: {
-          exact: devices[0].deviceId,
-        },
-      };
-    }
+  const selector = document.getElementById("devices");
+  selector.innerText = "";
+  devices.forEach(device => {
+    const option = document.createElement('option');
+    option.value = device.deviceId;
+    option.innerText = device.label;
+    selector.appendChild(option);
+  });
+  selector.onchange = () => {
+    constraints.video = {
+      ...constraints.video,
+      deviceId: {
+        exact: selector.selectedOptions[0].value,
+      },
+    };
+    connection.mediaConstraints = constraints;
     if (window.stream) {
       window.stream.getTracks().forEach((track) => {
         track.stop();
       });
       const video = document.getElementById(window.stream.id);
-      navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+      navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         window.stream = stream;
         video.srcObject = stream;
         video.id = stream.id;
@@ -66,7 +64,7 @@ window.onload = async () => {
   connection.videosContainer = document.getElementById("videoContainer");
   connection.mediaConstraints = constraints
   connection.onstream = async (event) => {
-    setupSwitchBtn();
+    setupCameraSelector();
     let video = document.getElementById(event.streamId);
     if (video && video.parentNode) {
       video.parentNode.removeChild(video);
@@ -93,5 +91,4 @@ window.onload = async () => {
     connection.videosContainer.appendChild(video);
   };
   connection.openOrJoin(roomId);
-  console.log(connection);
 };
