@@ -17,10 +17,8 @@ let constraints = {
   },
 };
 
-let devices = []
-
 const setupCameraSelector = async () => {
-  devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
+  const devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
   const selector = document.getElementById("devices");
   selector.innerText = "";
   devices.forEach(device => {
