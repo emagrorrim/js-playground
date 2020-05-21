@@ -16,14 +16,8 @@ var constraints = {
 
 var devices = []
 
-// const logger = info => {
-//   const log = document.getElementById("log");
-//   const div = document.createElement("div");
-//   log.appendChild(div);
-//   div.appendChild(document.createTextNode(info));
-// };
-
-const setupSwitchBtn = () => {
+const setupSwitchBtn = async () => {
+  devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
   const switchBtn = document.getElementById("switch");
   switchBtn.onclick = () => {
     if (constraints.video.deviceId && constraints.video.deviceId.exact === devices[0].deviceId) {
@@ -45,15 +39,6 @@ const setupSwitchBtn = () => {
   };
 };
 
-// const requestMediaAccess = async () => {
-//   // await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch((error) => {});
-//   devices = (await navigator.mediaDevices.enumerateDevices()).filter(
-//     (device) => device.kind === "videoinput"
-//   );
-//   console.log(devices);
-//   constraints.video = { deviceId: { exact: devices[0].deviceId } };
-// }
-
 window.onload = async () => {
   connection.socketURL = "https://rtcmulticonnection.herokuapp.com:443/";
   connection.session = {
@@ -67,8 +52,6 @@ window.onload = async () => {
   connection.mediaConstraints = constraints
   connection.onstream = async (event) => {
     document.body.appendChild(event.mediaElement);
-    // await requestMediaAccess();
-    devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
     setupSwitchBtn();
     event.mediaElement.srcObject = event.stream;
   };
