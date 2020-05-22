@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <script src="./utls/logger.js"></script>
+  </head>
+  <body>
+    <div id="videoContainer"></div>
+    <select name="devices" id="devices"></select>
+    <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+    <script src="https://rtcmulticonnection.herokuapp.com/node_modules/webrtc-adapter/out/adapter.js"></script>
+    <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+    <script>
+      window.onload = function () {
+
+
+        var constraints = { audio: true, video: true };
+        navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+          return navigator.mediaDevices.enumerateDevices()
+        }).then(devices => {
+          var i = 0;
+          for (var device of devices) {
+            if (device.kind !== 'videoinput') {
+              continue;
+            }
+            var option = document.createElement('option');
+            option.value = device.deviceId;
+            option.text = device.label || 'camera ' + String(++i);
+            document.querySelector('select#videoSource').appendChild(option);
+          }
+        }).catch(err => alert(err));
+      }
+      var connection = new RTCMultiConnection();
+
+      connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+
+      connection.session = {
+        audio: true,
+        video: true
+      };
+
+      // if ({!!showVideo}) {
+      //   connection.mediaConstraints.video = false;
+      // }
+
+      var b = 'test1234';
+      connection.openOrJoin(b, function (isJoined, roomid, error) {
+        debugger;
+      });
+
+
+      function cameraswitch(deviceId) {
+        debugger;
+
+        var video = document.querySelector('video');
+        var stream = video.captureStream();
+        stream.getTracks().forEach(track => {
+          track.stop();
+        });
+        connection.codecs.video = 'VP8';
+        connection.bandwidth = { // all values in kbits/per/seconds
+          audio: 192,
+          video: 512,
+          screen: 512
+        };
+
+        connection.mediaConstraints.video.optional = [];
+        connection.mediaConstraints.video.optional.push({ sourceId: deviceId });
+
+        connection.mediaConstraints.video.optional.push({
+          bandwidth: connection.bandwidth.video * 8 * 1024 || 128 * 8 * 1024
+        });
+
+        connection.addStream({
+          video: true,
+          oneway: true
+        });
+
+      }
+
+    </script>
+  </body>
+</html>
