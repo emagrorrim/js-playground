@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+DTSTART:20201106T110000Z
+DTEND:20201106T120000Z
+DTSTAMP:20201106T100055Z
+ORGANIZER;CN=emagrorrimxguo@gmail.com:mailto:emagrorrimxguo@gmail.com
+UID:1m5nkuo62kcl9c5uh459uriqfo@google.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=xinguo@thoughtworks.com;X-NUM-GUESTS=0:mailto:xinguo@thoughtworks.c
+ om
+ATTENDEE:
+CREATED:20201106T093759Z
+DESCRIPTION:-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~::~:~::-\nPlease do not edit this section of the descriptio
+ n.\n\nThis event has a video call.\nJoin: https://meet.google.com/ghn-agjz-
+ bcq\n\nView your event at https://calendar.google.com/calendar/event?action
+ =VIEW&eid=MW01bmt1bzYya2NsOWM1dWg0NTl1cmlxZm8geGluZ3VvQHRob3VnaHR3b3Jrcy5jb
+ 20&tok=MjQjZW1hZ3JvcnJpbXhndW9AZ21haWwuY29tNzUzNjhhYTRmZTdiNzFjZmEyZTZlNTc5
+ YmI4NWQ5ZjMzZDRkYjA2MA&ctz=Asia%2FShanghai&hl=en&es=1.\n-::~:~::~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-
+LAST-MODIFIED:20201106T100051Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:meeting
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR
